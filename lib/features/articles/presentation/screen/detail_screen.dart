@@ -1,0 +1,152 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:Ruang_sehat/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+import 'package:Ruang_sehat/features/articles/providers/articles_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:Ruang_sehat/features/articles/presentation/widgets/container_detail.dart';
+import 'package:Ruang_sehat/features/articles/presentation/widgets/popup_menu.dart';
+
+class DetailScreen extends StatefulWidget {
+  const DetailScreen({super.key});
+
+  static const routename = '/detail-article';
+
+  @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  static final String baseUrl = dotenv.env['BASE_URL']!;
+  bool isMenuOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)!.settings.arguments as Map;
+      final id = args['id'];
+
+      context.read<ArticlesProvider>().getDetailArticle(id);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<ArticlesProvider>();
+    final args = ModalRoute.of(context)!.settings.arguments as Map;
+    final isMe = args['isMe'] ?? false;
+
+    if (provider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (provider.detailArticle == null) {
+      return const Center(child: Text('Tidak ada artikel'));
+    }
+
+    final article = provider.detailArticle!;
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            CachedNetworkImage(
+              imageUrl: '$baseUrl/${article.image}',
+              width: double.infinity,
+              height: 500,
+              fit: BoxFit.cover,
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                height: 500,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.center,
+                    colors: [
+                      AppColors.background.withOpacity(1.0),
+                      AppColors.background.withOpacity(0.0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 0,
+              top: 0,
+              child: ContainerDetail(article: article),
+            ),
+            Positioned(
+              top: 25,
+              left: 25,
+              right: 25,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 45,
+                    height: 45,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.text.withOpacity(0.3),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 7),
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          color: AppColors.secondary,
+                          size: 25,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (isMe)
+                  Container(
+                    width: 45,
+                    height: 45,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.text.withOpacity(0.3),
+                    ),
+                    child: IconButton(
+                      onPressed: () => {
+                        setState(() {
+                          isMenuOpen = !isMenuOpen;
+                        })
+                      },
+                      icon: const Icon(
+                        Icons.more_horiz,
+                        color: AppColors.secondary,
+                        size: 25,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isMenuOpen) ... {
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isMenuOpen = false;
+                    });
+                  },
+                  child: Container(color: Colors.transparent),
+                ),
+              ),
+              Positioned(top: 80, right: 20, child: PopUpMenu(articleId: article.id)),
+            }
+          ],
+        ),
+      ),
+    );
+  }
+}

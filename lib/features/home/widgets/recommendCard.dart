@@ -1,0 +1,125 @@
+import 'package:flutter/material.dart';
+import 'package:Ruang_sehat/features/articles/presentation/screen/detail_screen.dart';
+import 'package:Ruang_sehat/theme/app_colors.dart';
+import 'package:Ruang_sehat/features/articles/providers/articles_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+class RecommendCard extends StatelessWidget {
+  const RecommendCard({super.key});
+  static final String baseUrl = dotenv.env['BASE_URL']!;
+
+  @override
+
+  Widget build(BuildContext context) {
+    return Consumer<ArticlesProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (provider.articles.isEmpty) {
+          return Center(child: Text('Tidak ada artikel'));
+        }
+
+        return Column(
+          children: [
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: provider.articles.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 7),
+              itemBuilder: (context, index) {
+                final article = provider.articles[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, DetailScreen.routename, arguments: {'id': article.id});
+                  },
+                  child: Card(
+                    color: AppColors.secondary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsetsGeometry.all(6),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 75,
+                            height: 75,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              image: DecorationImage(
+                                image: CachedNetworkImageProvider('$baseUrl/${article.image}'),
+                                fit: BoxFit.cover,
+                                alignment: Alignment.topCenter,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(7.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary.withOpacity(0.3),
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(99),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          article.category,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.primary,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        article.date,
+                                        style: TextStyle(
+                                          color: AppColors.hintText,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    article.title,
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
