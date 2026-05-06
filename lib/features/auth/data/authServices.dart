@@ -76,4 +76,27 @@ class AuthServices {
       throw Exception('Gagal mengambil profile user');
     }
   }
+
+  static Future<http.Response> updateProfile(
+    String name,
+    String username,
+    String password,
+  ) async {
+    final url = Uri.parse('$authBaseUrl/profile');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    return await http.put(
+      url,
+      headers: {
+        "content-type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: json.encode({
+        "name": name,
+        "username": username,
+        "password": password,
+      }),
+    );
+  }
 }

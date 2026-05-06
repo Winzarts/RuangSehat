@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Ruang_sehat/features/auth/data/authServices.dart';
 
-
 class Authproviders extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
@@ -132,5 +131,44 @@ class Authproviders extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  Future<bool> updateProfile(
+    String name,
+    String username,
+    String password,
+  ) async {
+    _isLoading = true;
+    _errorMessage = null;
+    _successMessage = null;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      _errorMessage = 'Token tidak ditemukan';
+      notifyListeners();
+      return false;
+    }
+
+    try {
+      final result = await AuthServices.updateProfile(name, username, password);
+      final body = jsonDecode(result.body);
+
+      if (result.statusCode == 200) {
+        _successMessage = body['message'] ?? 'Profile berhasil diupdate';
+        return true;
+      } else {
+        _errorMessage = body['message'] ?? 'Terjadi Kesalahan';
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

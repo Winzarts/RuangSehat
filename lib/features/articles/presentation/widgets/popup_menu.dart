@@ -27,7 +27,7 @@ class PopUpMenu extends StatelessWidget {
                 leading: Icon(Icons.edit, color: Colors.white),
                 title: Text('Edit article', style: TextStyle(color: Colors.white)),
                 onTap: () {
-                  Navigator.pushNamed(context, FormArticleScreen.routename, arguments: {'isEdit': true});
+                  Navigator.pushNamed(context, FormArticleScreen.routename, arguments: {'isEdit': true, 'articleId': articleId});
                 },
               ),
               ListTile(

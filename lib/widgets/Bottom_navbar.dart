@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:Ruang_sehat/features/articles/providers/articles_provider.dart';
 import 'package:Ruang_sehat/features/auth/provider/authProviders.dart';
 import 'package:provider/provider.dart';
+import 'package:Ruang_sehat/features/auth/presentation/screen/profileScreen.dart';
 
 class BottomNavbar extends StatefulWidget {
   const BottomNavbar({super.key});
@@ -19,7 +20,7 @@ class BottomNavbar extends StatefulWidget {
 class _BottomNavbarState extends State<BottomNavbar> {
   bool _firstLoad = true;
   int _selectedIndex = 0;
-  List<Widget> get _pages => [HomeScreen(), MyArticlesScreen()];
+  List<Widget> get _pages => [HomeScreen(), MyArticlesScreen(), UpdateProfile()];
 
   @override
   void initState() {
@@ -65,7 +66,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
         },
         items: [
           BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.newspaper), label: 'My Articles')
+          BottomNavigationBarItem(icon: Icon(LucideIcons.newspaper), label: 'My Articles'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profile')
         ],
       ),
     );
