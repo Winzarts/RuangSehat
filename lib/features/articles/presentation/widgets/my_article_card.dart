@@ -99,7 +99,7 @@ class MyArticleCard extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  'article.date',
+                                  article.date,
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: AppColors.hintText,
