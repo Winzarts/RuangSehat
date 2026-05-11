@@ -158,6 +158,7 @@ class Authproviders extends ChangeNotifier {
 
       if (result.statusCode == 200) {
         _successMessage = body['message'] ?? 'Profile berhasil diupdate';
+        await getProfile();
         return true;
       } else {
         _errorMessage = body['message'] ?? 'Terjadi Kesalahan';

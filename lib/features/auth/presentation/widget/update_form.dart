@@ -1,3 +1,4 @@
+import 'package:Ruang_sehat/widgets/Bottom_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Ruang_sehat/features/auth/provider/authProviders.dart';
@@ -42,6 +43,7 @@ class _UpdateFormState extends State<UpdateForm> {
     if (success) {
       if (upt.successMessage != null) {
         SnackbarHelper.show(context, message: upt.successMessage!);
+        Navigator.pushReplacementNamed(context, BottomNavbar.routename);
       }
     } else {
       if (upt.errorMessage != null) {
